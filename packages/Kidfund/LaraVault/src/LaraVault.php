@@ -59,7 +59,7 @@ trait LaraVault
         $enabled = config('vault.enabled');
 
         if (!$enabled) {
-            return $_client;
+            return null;
         }
 
         if ($_client == null) {
@@ -102,7 +102,8 @@ trait LaraVault
     protected function checkVaultClient()
     {
         if ($this->client === null) {
-            $this->client = self::getVaultClient();
+            //$this->client = self::getVaultClient();
+            $this->initVaultClient();
         }
     }
 
@@ -179,11 +180,17 @@ trait LaraVault
 
         $attrVal = $this->attributes[$attrKey];
 
-        if ($this->isEncrypted($attrVal) && $this->isDirty($attrKey)) {
+        /*if ($this->isEncrypted($attrVal) && $this->isDirty($attrKey)) {
             //throw new Exception("LaraVault: Should not have a dirty encrypted value");
             return true;
         }
         else if (!$this->isEncrypted($attrVal) && $this->isDirty($attrKey)) {
+            return true;
+        }*/
+
+        if ($this->isEncrypted($attrVal)) {
+            return false;
+        } else {
             return true;
         }
 
@@ -195,6 +202,7 @@ trait LaraVault
      */
     protected function encryptAttribute($attrKey)
     {
+        Log::debug("Encrypting $attrKey");
         $plaintext = $this->attributes[$attrKey];
         $valutKey = $this->getVaultKeyForModel();
 
@@ -247,11 +255,15 @@ trait LaraVault
      * @return bool
      */
     protected function shouldDecrypt($attrKey) {
+        $this->checkVaultClient();
+
         if (!$this->enabled) {
+            Log::debug("Should not decrypt $attrKey, not enabled");
             return false;
         }
 
         if (!isset($this->attributes[$attrKey]) || !$this->attrIsEncryptable($attrKey)) {
+            Log::debug("Should not decrypt $attrKey, not encryptable");
             return false;
         }
 
@@ -287,6 +299,8 @@ trait LaraVault
         // Do we have variables to decrypt?
         if ($this->modelHasEncryptionEnabled() && $this->shouldDecrypt($attrKey)) {
             $this->checkVaultClient();
+
+            Log::debug("Decrypting $attrKey");
 
             $cipherText = $attrVal;
             $valutKey = $this->getVaultKeyForModel();
