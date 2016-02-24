@@ -13,6 +13,7 @@ trait LaraVault
 
     /** @var TransportClient */
     protected $client = null;
+    protected $enabled = false;
 
     /**
      * Tap into model's boot
@@ -21,7 +22,7 @@ trait LaraVault
     public static function bootLaraVault()
     {
         $encryptClosure = function($item) {
-            $item->setVaultClient(self::getVaultClient());
+            $item->initVaultClient();
             $item->encrypt();
             return true;
         };
@@ -50,24 +51,49 @@ trait LaraVault
      * Share an instance of the TransportClient across all models
      *
      * @return TransportClient|null
+     * @throws Exception
      */
     public static function getVaultClient()
     {
         static $_client = null;
+        $enabled = config('vault.enabled');
 
-        if ($_client == null) {
-            $_client = new TransportClient("http://192.168.10.10:8200", "09089548-d7e6-ee34-3119-a1cd31da1967");
+        if (!$enabled) {
+            return $_client;
         }
 
+        if ($_client == null) {
+            $vaultAddr = config('vault.addr');
+            $vaultToken = config('vault.token');
+
+            if ($vaultToken == null || $vaultToken == 'none') {
+                throw new Exception("Vault token must be configured");
+            }
+
+            $_client = new TransportClient($vaultAddr, $vaultToken);
+        }
         return $_client;
     }
 
     /**
+     * Does not take enabled into account
      * @param TransportClient $client
      */
     public function setVaultClient(TransportClient $client)
     {
         $this->client = $client;
+    }
+
+    /**
+     * Checks enabled first
+     */
+    public function initVaultClient()
+    {
+        $this->enabled = config('vault.enabled');
+
+        if ($this->enabled) {
+            $this->setVaultClient(self::getVaultClient());
+        }
     }
 
     /**
@@ -143,7 +169,10 @@ trait LaraVault
      */
     protected function shouldEncrypt($attrKey)
     {
-        print("shouldEncrypt $attrKey \n");
+        if (!$this->enabled) {
+            return false;
+        }
+
         if (!isset($this->attributes[$attrKey]) || !$this->attrIsEncryptable($attrKey)) {
             return false;
         }
@@ -183,6 +212,10 @@ trait LaraVault
     {
         $this->checkVaultClient();
 
+        if (!$this->enabled) {
+            return false;
+        }
+
         // Do we have variables to encrypt?
         if (!$this->modelHasEncryptionEnabled()) {
             return;
@@ -214,6 +247,10 @@ trait LaraVault
      * @return bool
      */
     protected function shouldDecrypt($attrKey) {
+        if (!$this->enabled) {
+            return false;
+        }
+
         if (!isset($this->attributes[$attrKey]) || !$this->attrIsEncryptable($attrKey)) {
             return false;
         }
