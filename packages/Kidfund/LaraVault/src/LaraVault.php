@@ -22,7 +22,6 @@ trait LaraVault
     public static function bootLaraVault()
     {
         $encryptClosure = function($item) {
-            $item->initVaultClient();
             $item->encrypt();
             return true;
         };
@@ -42,58 +41,27 @@ trait LaraVault
         static::saving($encryptClosure);
         static::creating($encryptClosure);
         static::updating($encryptClosure);
-
-
-    }
-
-    // TODO should this be shared globally?
-    /**
-     * Share an instance of the TransportClient across all models
-     *
-     * @return TransportClient|null
-     * @throws Exception
-     */
-    public static function getVaultClient()
-    {
-        static $_client = null;
-        $enabled = config('vault.enabled');
-
-        if (!$enabled) {
-            return null;
-        }
-
-        if ($_client == null) {
-            $vaultAddr = config('vault.addr');
-            $vaultToken = config('vault.token');
-
-            if ($vaultToken == null || $vaultToken == 'none') {
-                throw new Exception("Vault token must be configured");
-            }
-
-            $_client = new TransportClient($vaultAddr, $vaultToken);
-        }
-        return $_client;
     }
 
     /**
      * Does not take enabled into account
      * @param TransportClient $client
      */
-    public function setVaultClient(TransportClient $client)
+    public function setVaultClient(TransportClient $client, $enabled = false)
     {
         $this->client = $client;
+        $this->enabled = $enabled;
+
     }
 
-    /**
-     * Checks enabled first
-     */
-    public function initVaultClient()
+    protected function hasClient()
     {
-        $this->enabled = config('vault.enabled');
+        return $this->client !== null;
+    }
 
-        if ($this->enabled) {
-            $this->setVaultClient(self::getVaultClient());
-        }
+    protected function isEnabled()
+    {
+        return $this->enabled;
     }
 
     /**
@@ -101,10 +69,15 @@ trait LaraVault
      */
     protected function checkVaultClient()
     {
-        if ($this->client === null) {
-            //$this->client = self::getVaultClient();
-            $this->initVaultClient();
+        if (!$this->isEnabled()) {
+            return;
         }
+
+        if ($this->hasClient() && $this->isEnabled()) {
+            return;
+        }
+
+        throw new Exception("Vault Client cannot be null");
     }
 
     /*
@@ -134,8 +107,7 @@ trait LaraVault
      */
     protected function modelHasEncryptionEnabled()
     {
-        // TODO and has len
-        return isset($this->encrypts);
+        return isset($this->encrypts) && count($this->encrypts) > 0;
     }
 
     /**
@@ -170,7 +142,8 @@ trait LaraVault
      */
     protected function shouldEncrypt($attrKey)
     {
-        if (!$this->enabled) {
+
+        if (!$this->isEnabled()) {
             return false;
         }
 
@@ -202,15 +175,15 @@ trait LaraVault
      */
     protected function encryptAttribute($attrKey)
     {
-        Log::debug("Encrypting $attrKey");
         $plaintext = $this->attributes[$attrKey];
-        $valutKey = $this->getVaultKeyForModel();
-
+        $vaultKey = $this->getVaultKeyForModel();
+        Log::debug("Encrypting $attrKey");
         // TODO figure out how to calculate context
         //$context = $this->id;
-
-        $encrypted = $this->client->encrypt($valutKey, $plaintext, null);
+        $encrypted = $this->client->encrypt($vaultKey, $plaintext, null);
         $this->attributes[$attrKey] = $encrypted;
+
+        return $encrypted;
     }
 
     /**
@@ -218,9 +191,10 @@ trait LaraVault
      */
     protected function encrypt()
     {
+
         $this->checkVaultClient();
 
-        if (!$this->enabled) {
+        if (!$this->isEnabled()) {
             return false;
         }
 
@@ -255,9 +229,10 @@ trait LaraVault
      * @return bool
      */
     protected function shouldDecrypt($attrKey) {
+        dd('shouldDecrypt');
         $this->checkVaultClient();
 
-        if (!$this->enabled) {
+        if (!$this->isEnabled()) {
             Log::debug("Should not decrypt $attrKey, not enabled");
             return false;
         }
@@ -282,6 +257,7 @@ trait LaraVault
      */
     public function decryptAttributes($attributes)
     {
+        dd('decryptAttributes');
         foreach ($attributes as $key => $value) {
             $attributes[$key] = $this->decryptAttribute($key, $value);
         }
@@ -296,6 +272,7 @@ trait LaraVault
      */
     protected function decryptAttribute($attrKey, $attrVal)
     {
+        dd('decryptAttribute');
         // Do we have variables to decrypt?
         if ($this->modelHasEncryptionEnabled() && $this->shouldDecrypt($attrKey)) {
             $this->checkVaultClient();
@@ -327,6 +304,7 @@ trait LaraVault
      */
     protected function getAttributeFromArray($key)
     {
+        dd('getAttributeFromArray');
         return $this->decryptAttribute($key, parent::getAttributeFromArray($key));
     }
 
@@ -337,6 +315,7 @@ trait LaraVault
      */
     protected function getArrayableAttributes()
     {
+        dd('getArrayableAttributes');
         return $this->decryptAttributes(parent::getArrayableAttributes());
     }
 
@@ -347,6 +326,7 @@ trait LaraVault
      */
     public function getAttributes()
     {
+        dd('getAttributes');
         return $this->decryptAttributes(parent::getAttributes());
     }
 
