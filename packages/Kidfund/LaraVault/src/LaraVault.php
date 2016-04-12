@@ -229,7 +229,7 @@ trait LaraVault
      * @return bool
      */
     protected function shouldDecrypt($attrKey) {
-        dd('shouldDecrypt');
+
         $this->checkVaultClient();
 
         if (!$this->isEnabled()) {
@@ -241,7 +241,6 @@ trait LaraVault
             Log::debug("Should not decrypt $attrKey, not encryptable");
             return false;
         }
-
         $attrVal = $this->attributes[$attrKey];
 
         return $this->isEncrypted($attrVal);
@@ -255,9 +254,8 @@ trait LaraVault
      * @param  array $attributes
      * @return array
      */
-    public function decryptAttributes($attributes)
+    protected function decryptAttributes($attributes)
     {
-        dd('decryptAttributes');
         foreach ($attributes as $key => $value) {
             $attributes[$key] = $this->decryptAttribute($key, $value);
         }
@@ -272,7 +270,7 @@ trait LaraVault
      */
     protected function decryptAttribute($attrKey, $attrVal)
     {
-        dd('decryptAttribute');
+
         // Do we have variables to decrypt?
         if ($this->modelHasEncryptionEnabled() && $this->shouldDecrypt($attrKey)) {
             $this->checkVaultClient();
@@ -289,7 +287,7 @@ trait LaraVault
             return $plaintext;
         }
 
-        return $attrVal;
+        return false;
     }
 
     /*
@@ -304,7 +302,6 @@ trait LaraVault
      */
     protected function getAttributeFromArray($key)
     {
-        dd('getAttributeFromArray');
         return $this->decryptAttribute($key, parent::getAttributeFromArray($key));
     }
 
@@ -315,7 +312,6 @@ trait LaraVault
      */
     protected function getArrayableAttributes()
     {
-        dd('getArrayableAttributes');
         return $this->decryptAttributes(parent::getArrayableAttributes());
     }
 
@@ -326,7 +322,6 @@ trait LaraVault
      */
     public function getAttributes()
     {
-        dd('getAttributes');
         return $this->decryptAttributes(parent::getAttributes());
     }
 
