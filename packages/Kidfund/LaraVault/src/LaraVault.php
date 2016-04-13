@@ -64,20 +64,30 @@ trait LaraVault
         return $this->enabled;
     }
 
+    protected function enabledConfigured()
+    {
+        return config('vault.enabled');
+    }
+
     /**
+     * TODO : get this working all the time with DI
      * Must have a Client to function
      */
     protected function checkVaultClient()
     {
-        if (!$this->isEnabled()) {
+        if (!$this->enabledConfigured()) {
             return;
         }
 
-        if ($this->hasClient() && $this->isEnabled()) {
+        if ($this->hasClient() && $this->enabledConfigured()) {
             return;
         }
 
-        throw new Exception("Vault Client cannot be null");
+        if (!$this->hasClient() && !$this->enabledConfigured()) {
+            return;
+        }
+
+        $this->setVaultClient(LaraVaultServiceProvidor::getTransportClient(), true);
     }
 
     /*
@@ -142,6 +152,7 @@ trait LaraVault
      */
     protected function shouldEncrypt($attrKey)
     {
+        $this->checkVaultClient();
 
         if (!$this->isEnabled()) {
             return false;
