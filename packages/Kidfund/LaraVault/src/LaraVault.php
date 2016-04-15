@@ -2,7 +2,7 @@
 
 namespace Kidfund\LaraVault;
 
-use Kidfund\ThinTransportVaultClient\TransportClient;
+use Kidfund\ThinTransportVaultClient\TransitClient;
 use Log;
 use Exception;
 
@@ -11,7 +11,7 @@ trait LaraVault
     protected static $LARAVAULT_PREFIX = 'laravault';
     protected static $VAULT_PREFIX = "vault:v1:";
 
-    /** @var TransportClient */
+    /** @var TransitClient */
     protected $client = null;
     protected $enabled = false;
 
@@ -45,9 +45,9 @@ trait LaraVault
 
     /**
      * Does not take enabled into account
-     * @param TransportClient $client
+     * @param TransitClient $client
      */
-    public function setVaultClient(TransportClient $client, $enabled = false)
+    public function setVaultClient(TransitClient $client, $enabled = false)
     {
         $this->client = $client;
         $this->enabled = $enabled;
