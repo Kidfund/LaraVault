@@ -11,7 +11,7 @@ namespace Kidfund\LaraVault;
 
 use App\TimModel;
 use Illuminate\Support\ServiceProvider;
-use Kidfund\ThinTransportVaultClient\TransportClient;
+use Kidfund\ThinTransportVaultClient\TransitClient;
 
 class LaraVaultServiceProvidor extends ServiceProvider
 {
@@ -40,7 +40,7 @@ class LaraVaultServiceProvidor extends ServiceProvider
             throw new Exception("Vault token must be configured");
         }
 
-        $_client = new TransportClient($vaultAddr, $vaultToken);
+        $_client = new TransitClient($vaultAddr, $vaultToken);
         return $_client;
     }
 
