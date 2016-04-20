@@ -23,7 +23,6 @@ trait LaraVault
     {
         $encryptClosure = function($item) {
             $item->encrypt();
-            return true;
         };
 
         /*
