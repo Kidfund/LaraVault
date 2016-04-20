@@ -297,7 +297,7 @@ trait LaraVault
             return $plaintext;
         }
 
-        return false;
+        return $attrVal;
     }
 
     /*
