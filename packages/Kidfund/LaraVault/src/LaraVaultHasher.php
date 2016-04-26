@@ -29,6 +29,8 @@ use Kidfund\ThinTransportVaultClient\TransitClient;
  */
 class LaraVaultHasher
 {
+    protected $client;
+
     /**
      * LaraVaultHasher constructor.
      * @param TransitClient $client
@@ -44,18 +46,29 @@ class LaraVaultHasher
      * @return string
      * @throws StringException
      */
-    public function hash(Eloquent $model, $field) {
+    public function hash(Eloquent $model, $field, $value) {
         if (!is_string($field)) {
             throw new StringException("field must be a string");
         }
 
+        $salt = $this->getSalt($model, $field);
+        $hashed = crypt($value, $salt);
+        return $hashed;
+    }
+
+    protected function getSalt(Eloquent $model, $field)
+    {
         $key = $this->generateFieldKey($model, $field);
 
         try {
             $record = $this->getRecord($key);
+            $record->setVaultClient($this->client);
+
             return $record->value;
         } catch (ModelNotFoundException $e) {
             $record = new LaraVaultHash();
+            $record->setVaultClient($this->client);
+
             $record->key = $key;
             $record->value = $this->makeSalt();
             $record->save();
