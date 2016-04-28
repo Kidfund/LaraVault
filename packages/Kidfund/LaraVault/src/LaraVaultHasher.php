@@ -35,9 +35,11 @@ class LaraVaultHasher
      * LaraVaultHasher constructor.
      * @param TransitClient $client
      */
-    public function __construct(TransitClient $client)
+    public function __construct(TransitClient $client = null)
     {
-        $this->client = $client;
+        if ($client) {
+            $this->client = $client;
+        }
     }
 
     /**

@@ -51,12 +51,12 @@ class LaraVaultServiceProvidor extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('Kidfund\ThinTransportVaultClient\TransportClient', function ($app) {
+        $this->app->singleton('Kidfund\ThinTransportVaultClient\TransitClient', function ($app) {
             return $this::getTransportClient();
         });
 
         $this->app->singleton('Kidfund\LaraVault\LaraVaultHasher', function ($app) {
-            return new LaraVaultHasher($app['Kidfund\ThinTransportVaultClient\TransportClient']);
+            return new LaraVaultHasher($app['Kidfund\ThinTransportVaultClient\TransitClient']);
         });
     }
 }
