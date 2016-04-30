@@ -24,7 +24,7 @@ class LaraVaultServiceProvidor extends ServiceProvider
     {
     }
 
-    public static function getTransportClient()
+    public static function getTransitClient()
     {
 
         $enabled = config('vault.enabled');
@@ -52,7 +52,7 @@ class LaraVaultServiceProvidor extends ServiceProvider
     public function register()
     {
         $this->app->singleton('Kidfund\ThinTransportVaultClient\TransitClient', function ($app) {
-            return $this::getTransportClient();
+            return $this::getTransitClient();
         });
 
         $this->app->singleton('Kidfund\LaraVault\LaraVaultHasher', function ($app) {

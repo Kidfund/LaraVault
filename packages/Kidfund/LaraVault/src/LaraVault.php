@@ -86,7 +86,7 @@ trait LaraVault
             return;
         }
 
-        $this->setVaultClient(LaraVaultServiceProvidor::getTransportClient(), true);
+        $this->setVaultClient(LaraVaultServiceProvidor::getTransitClient(), true);
     }
 
     /*
