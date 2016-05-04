@@ -8,6 +8,7 @@
 namespace Kidfund\LaraVault;
 
 use Eloquent;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Kidfund\ThinTransportVaultClient\StringException;
 use Kidfund\ThinTransportVaultClient\TransitClient;
@@ -48,7 +49,7 @@ class LaraVaultHasher
      * @return string
      * @throws StringException
      */
-    public function hash(Eloquent $model, $field, $value) {
+    public function hash(Model $model, $field, $value) {
         if (!is_string($field)) {
             throw new StringException("field must be a string");
         }
@@ -58,18 +59,22 @@ class LaraVaultHasher
         return $hashed;
     }
 
-    protected function getSalt(Eloquent $model, $field)
+    protected function getSalt(Model $model, $field)
     {
         $key = $this->generateFieldKey($model, $field);
 
         try {
             $record = $this->getRecord($key);
-            $record->setVaultClient($this->client);
+            if ($this->client) {
+                $record->setVaultClient($this->client);
+            }
 
             return $record->value;
         } catch (ModelNotFoundException $e) {
             $record = new LaraVaultHash();
-            $record->setVaultClient($this->client);
+            if ($this->client) {
+                $record->setVaultClient($this->client);
+            }
 
             $record->key = $key;
             $record->value = $this->makeSalt();
@@ -84,7 +89,7 @@ class LaraVaultHasher
      * @param $field
      * @return string
      */
-    protected function generateFieldKey(Eloquent $model, $field)
+    protected function generateFieldKey(Model $model, $field)
     {
         $modelString = get_class($model);
         $key = "$modelString-$field";
