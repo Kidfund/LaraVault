@@ -9,7 +9,7 @@ use Exception;
 trait LaraVault
 {
     protected static $LARAVAULT_PREFIX = 'laravault';
-    protected static $VAULT_PREFIX = "vault:v1:";
+    protected static $VAULT_PREFIX = 'vault:v1:';
 
     /** @var TransitClient */
     protected $client = null;
@@ -21,7 +21,7 @@ trait LaraVault
      */
     public static function bootLaraVault()
     {
-        $encryptClosure = function($item) {
+        $encryptClosure = function ($item) {
             $item->encrypt();
         };
 
@@ -50,7 +50,6 @@ trait LaraVault
     {
         $this->client = $client;
         $this->enabled = $enabled;
-
     }
 
     protected function hasClient()
@@ -99,15 +98,16 @@ trait LaraVault
      */
     protected function isEncrypted($value)
     {
-        return strpos((string)$value, self::$VAULT_PREFIX) === 0;
+        return strpos((string) $value, self::$VAULT_PREFIX) === 0;
     }
 
     /**
      * Each col will have it's own vault key. This builds the first part of the key
      * @return string
      */
-    protected function getVaultKeyForModel() {
-        return self::$LARAVAULT_PREFIX . "-" .  self::getTable();
+    protected function getVaultKeyForModel()
+    {
+        return self::$LARAVAULT_PREFIX.'-'.self::getTable();
     }
 
     /**
@@ -139,6 +139,7 @@ trait LaraVault
      */
 
     // TODO track encrypted dirty seperatly
+
     /**
      * Test:
      * - If attr is set on model
@@ -201,7 +202,6 @@ trait LaraVault
      */
     protected function encrypt()
     {
-
         $this->checkVaultClient();
 
         if (!$this->isEnabled()) {
@@ -238,25 +238,25 @@ trait LaraVault
      * @param string $attrKey
      * @return bool
      */
-    protected function shouldDecrypt($attrKey) {
-
+    protected function shouldDecrypt($attrKey)
+    {
         $this->checkVaultClient();
 
         if (!$this->isEnabled()) {
             Log::debug("Should not decrypt $attrKey, not enabled");
+
             return false;
         }
 
         if (!isset($this->attributes[$attrKey]) || !$this->attrIsEncryptable($attrKey)) {
             Log::debug("Should not decrypt $attrKey, not encryptable");
+
             return false;
         }
         $attrVal = $this->attributes[$attrKey];
 
         return $this->isEncrypted($attrVal);
     }
-
-
 
     /**
      * Decrypt each attribute in the array as required.
@@ -294,6 +294,7 @@ trait LaraVault
             //$context = $this->id;
 
             $plaintext = $this->client->decrypt($valutKey, $cipherText, null);
+
             return $plaintext;
         }
 
@@ -334,5 +335,4 @@ trait LaraVault
     {
         return $this->decryptAttributes(parent::getAttributes());
     }
-
 }

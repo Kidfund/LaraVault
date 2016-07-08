@@ -4,7 +4,6 @@
  * Date: 4/25/16
  * @copyright 2015 Kidfund Inc
  */
-
 namespace Kidfund\LaraVault;
 
 use Eloquent;
@@ -49,13 +48,15 @@ class LaraVaultHasher
      * @return string
      * @throws StringException
      */
-    public function hash(Model $model, $field, $value) {
+    public function hash(Model $model, $field, $value)
+    {
         if (!is_string($field)) {
-            throw new StringException("field must be a string");
+            throw new StringException('field must be a string');
         }
 
         $salt = $this->getSalt($model, $field);
         $hashed = crypt($value, $salt);
+
         return $hashed;
     }
 
@@ -105,6 +106,7 @@ class LaraVaultHasher
     protected function getRecord($key)
     {
         $record = LaraVaultHash::whereKey($key)->firstOrFail();
+
         return $record;
     }
 
@@ -114,7 +116,7 @@ class LaraVaultHasher
     protected function makeSalt()
     {
         $randPortion = $this->getRandForSalt();
-        $salt = "$2y$12$" . $randPortion;
+        $salt = '$2y$12$'.$randPortion;
 
         return $salt;
     }
@@ -126,6 +128,7 @@ class LaraVaultHasher
     {
         // salt for bcrypt needs to be 22 base64 characters (but just [./0-9A-Za-z]), see http://php.net/crypt
         $rand = substr(strtr(base64_encode(openssl_random_pseudo_bytes(22)), '+', '.'), 0, 22);
+
         return $rand;
     }
 }
