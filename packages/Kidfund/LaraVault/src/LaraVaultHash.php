@@ -4,14 +4,9 @@
  * Date: 4/25/16
  * @copyright 2015 Kidfund Inc
  */
-
-
 namespace Kidfund\LaraVault;
 
-
 use Eloquent;
-use Kidfund\ThinTransportVaultClient\StringException;
-use Kidfund\ThinTransportVaultClient\TransitClient;
 
 /**
  * Kidfund\LaraVault\LaraVaultHasher
@@ -35,5 +30,4 @@ class LaraVaultHash extends Eloquent
     protected $table = 'laravault_hash';
 
     protected $encrypts = ['value'];
-
 }
