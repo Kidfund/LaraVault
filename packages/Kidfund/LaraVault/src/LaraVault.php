@@ -105,9 +105,9 @@ trait LaraVault
      * Each col will have it's own vault key. This builds the first part of the key
      * @return string
      */
-    protected function getVaultKeyForModel()
+    protected function getVaultKeyForModel($col = '')
     {
-        return self::$LARAVAULT_PREFIX.'-'.self::getTable();
+        return self::$LARAVAULT_PREFIX.'-'.self::getTable().'-'.$col;
     }
 
     /**
@@ -183,11 +183,12 @@ trait LaraVault
 
     /**
      * @param string $attrKey
+     * @return mixed
      */
     protected function encryptAttribute($attrKey)
     {
         $plaintext = $this->attributes[$attrKey];
-        $vaultKey = $this->getVaultKeyForModel();
+        $vaultKey = $this->getVaultKeyForModel($attrKey);
         Log::debug("Encrypting $attrKey");
         // TODO figure out how to calculate context
         //$context = $this->id;
@@ -288,7 +289,7 @@ trait LaraVault
             Log::debug("Decrypting $attrKey");
 
             $cipherText = $attrVal;
-            $valutKey = $this->getVaultKeyForModel();
+            $valutKey = $this->getVaultKeyForModel($attrKey);
 
             // TODO figure out how to calculate context
             //$context = $this->id;
