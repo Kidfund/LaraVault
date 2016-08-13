@@ -6,6 +6,7 @@
  */
 namespace Kidfund\LaraVault;
 
+use Exception;
 use Illuminate\Support\ServiceProvider;
 use Kidfund\ThinTransportVaultClient\TransitClient;
 
