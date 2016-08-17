@@ -43,10 +43,33 @@ class LaraVaultHasher
     }
 
     /**
-     * @param Eloquent $model
+     * @param $modelName
      * @param $field
+     * @param $value
      * @return string
      * @throws StringException
+     * @internal param Eloquent $model
+     */
+    public function hashByModelName($modelName, $field, $value)
+    {
+        if (!is_string($field)) {
+            throw new StringException('field must be a string');
+        }
+
+        $salt = $this->getSalt($modelName, $field);
+        $hashed = crypt($value, $salt);
+
+        return $hashed;
+    }
+
+    /**
+     * @param Model $model
+     * @param $field
+     * @param $value
+     * @return string
+     * @throws StringException
+     * @internal param $modelName
+     * @internal param Eloquent $model
      */
     public function hash(Model $model, $field, $value)
     {
@@ -54,15 +77,15 @@ class LaraVaultHasher
             throw new StringException('field must be a string');
         }
 
-        $salt = $this->getSalt($model, $field);
+        $salt = $this->getSalt(get_class($model), $field);
         $hashed = crypt($value, $salt);
 
         return $hashed;
     }
 
-    protected function getSalt(Model $model, $field)
+    protected function getSalt($modelName, $field)
     {
-        $key = $this->generateFieldKey($model, $field);
+        $key = $this->generateFieldKey($modelName, $field);
 
         try {
             $record = $this->getRecord($key);
@@ -86,14 +109,13 @@ class LaraVaultHasher
     }
 
     /**
-     * @param Eloquent $model
+     * @param $modelName
      * @param $field
      * @return string
      */
-    protected function generateFieldKey(Model $model, $field)
+    protected function generateFieldKey($modelName, $field)
     {
-        $modelString = get_class($model);
-        $key = "$modelString-$field";
+        $key = "$modelName-$field";
 
         return $key;
     }
