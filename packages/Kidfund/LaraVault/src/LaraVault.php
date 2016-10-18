@@ -206,7 +206,7 @@ trait LaraVault
         $this->checkVaultClient();
 
         if (!$this->isEnabled()) {
-            return false;
+            return;
         }
 
         // Do we have variables to encrypt?
