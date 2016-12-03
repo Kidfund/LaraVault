@@ -4,13 +4,14 @@
  * Date: 4/25/16
  * @copyright 2015 Kidfund Inc
  */
+
 namespace Kidfund\LaraVault;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Kidfund\ThinTransportVaultClient\StringException;
 use Kidfund\ThinTransportVaultClient\TransitClient;
+use Kidfund\ThinTransportVaultClient\StringException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Kidfund\LaraVault\LaraVaultHasher

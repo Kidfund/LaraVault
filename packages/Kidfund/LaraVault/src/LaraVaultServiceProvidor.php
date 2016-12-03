@@ -4,6 +4,7 @@
  * Date: 4/11/16
  * @copyright 2015 Kidfund Inc
  */
+
 namespace Kidfund\LaraVault;
 
 use Exception;
