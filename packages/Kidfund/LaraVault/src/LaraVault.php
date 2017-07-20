@@ -2,9 +2,9 @@
 
 namespace Kidfund\LaraVault;
 
+use Log;
 use Exception;
 use Kidfund\ThinTransportVaultClient\TransitClient;
-use Log;
 
 trait LaraVault
 {
