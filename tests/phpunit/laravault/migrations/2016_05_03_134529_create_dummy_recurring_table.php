@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RecurringContributionType;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -25,7 +26,11 @@ class CreateDummyRecurringTable extends Migration
             $table->float('amount')->unsigned();
 
             // recurring type
-            $table->enum('recurring_type', ['onetime', 'daily', 'weekly', 'monthly', 'yearly'])->nullable();
+            $table->enum('recurring_type', [RecurringContributionType::ONETIME,
+                RecurringContributionType::DAILY,
+                RecurringContributionType::WEEKLY,
+                RecurringContributionType::MONTHLY,
+                RecurringContributionType::YEARLY])->nullable();
 
             // contribution starting datetime
             $table->timestamp('start_date');
