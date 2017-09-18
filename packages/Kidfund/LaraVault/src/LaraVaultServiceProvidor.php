@@ -10,6 +10,7 @@ namespace Kidfund\LaraVault;
 use Exception;
 use Illuminate\Support\ServiceProvider;
 use Kidfund\ThinTransportVaultClient\TransitClient;
+use Kidfund\ThinTransportVaultClient\VaultEncrypts;
 
 class LaraVaultServiceProvidor extends ServiceProvider
 {
@@ -49,12 +50,16 @@ class LaraVaultServiceProvidor extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('Kidfund\ThinTransportVaultClient\TransitClient', function ($app) {
+        $this->app->singleton(TransitClient::class, function () {
             return $this::getTransitClient();
         });
 
-        $this->app->singleton('Kidfund\LaraVault\LaraVaultHasher', function ($app) {
-            return new LaraVaultHasher($app['Kidfund\ThinTransportVaultClient\TransitClient']);
+        $this->app->singleton(LaraVaultHasher::class, function ($app) {
+            return new LaraVaultHasher($app[TransitClient::class]);
+        });
+
+        $this->app->singleton(VaultEncrypts::class, function ($app) {
+            return $app[TransitClient::class];
         });
     }
 }
