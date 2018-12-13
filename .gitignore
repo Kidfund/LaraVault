@@ -1,2 +1,6 @@
 composer.lock
 vendor
+.env.*.php
+.env.php
+.env
+.env.example
