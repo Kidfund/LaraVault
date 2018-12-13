@@ -9,6 +9,10 @@
 
 LaraVault uses Hashicorp [Vault](https://www.vaultproject.io/ "Vault") to encrypt/decrypt specific fields on an Eloquent model, and store the encrypted values in your existing database
 
+[![](http://pocketstudio.jp.s3.amazonaws.com/log3/wp-content/uploads/2015/07/hahsicorp-vaule-header2-670x262.png)](https://www.vaultproject.io/ "Vault Homepage)")
+
+[![](http://tecadmin.net/wp-content/uploads/2014/12/laravel-logo.png)](https://laravel.com/ "Laravel Homepage")
+
 ## Install
 
 Via Composer
