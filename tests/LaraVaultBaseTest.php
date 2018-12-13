@@ -2,9 +2,13 @@
 
 use Kidfund\LaraVault\LaraVaultHasher;
 use Kidfund\LaraVault\LaraVaultServiceProvidor;
+use Kidfund\MonkeyPatcher\MonkeyPatcher;
+use Orchestra\Testbench\TestCase;
 
 class LaraVaultBaseTest extends TestCase
 {
+    use MonkeyPatcher;
+
     const ENCRYPTED_VALUE = "vault:v1:UEhQVW5pdF9GcmFtZXdvcmtfTW9ja09iamVjdF9Nb2NrT2JqZWN0";
     const VAULT_MODEL_KEY = "laravault-dummy-";
     const VALID_PHONE = '1231231234';
@@ -136,5 +140,15 @@ class LaraVaultBaseTest extends TestCase
     public function this_supresses_a_no_test_warning()
     {
         $this->assertTrue(true);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDummyMigrationsDir()
+    {
+        $path = realpath('./tests/migrations');
+
+        return $path;
     }
 }

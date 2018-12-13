@@ -1,7 +1,7 @@
 <?php
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Kidfund\LaraVault\LaraVaultHash;
-use Kidfund\LaraVault\LaraVaultHasher;
 
 class LaraVaultHasherIntegrationTest extends LaraVaultBaseTest
 {
@@ -13,37 +13,25 @@ class LaraVaultHasherIntegrationTest extends LaraVaultBaseTest
     const PHONE1 = '1231231234';
     const PHONE2 = '4324324321';
 
+    use DatabaseMigrations;
+
     public function setUp()
     {
         parent::setUp();
 
-        $this->artisan('migrate:reset', [
-            '--database' => 'sqlite_test'
-        ]);
         $this->artisan('migrate', [
-            '--database' => 'sqlite_test',
-            '--path' => $this->getDummyMigrationsDir()
+            '--realpath' => $this->getDummyMigrationsDir(),
         ]);
-
-        LaraVaultHash::truncate();
-    }
-
-    public function tearDown()
-    {
-        $this->artisan('migrate:reset', [
-            '--database' => 'sqlite_test'
-        ]);
-        parent::tearDown();
     }
 
     /** @test */
     public function it_saves_hashrecord()
     {
         $hasher = $this->getRealHasherWithMockCLient();
-        
+
         $model = new LaraVaultHash();
         $model->setVaultClient($this->getMockTransitClient());
-        
+
         $salt = $hasher->hash($model, self::KEY, self::VALUE);
 
         $this->seeInDatabase('laravault_hash', ['key' => self::EXPECTED_KEY]);

@@ -7,7 +7,6 @@
 
 namespace Kidfund\LaraVault;
 
-use Eloquent;
 use Illuminate\Database\Eloquent\Model;
 use Kidfund\ThinTransportVaultClient\TransitClient;
 use Kidfund\ThinTransportVaultClient\StringException;
@@ -26,7 +25,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * @method static \Illuminate\Database\Query\Builder|\Kidfund\LaraVault\LaraVaultHasher whereValue($value)
  * @method static \Illuminate\Database\Query\Builder|\Kidfund\LaraVault\LaraVaultHasher whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\Kidfund\LaraVault\LaraVaultHasher whereUpdatedAt($value)
- * @mixin \Eloquent
  */
 class LaraVaultHasher
 {
@@ -49,7 +47,7 @@ class LaraVaultHasher
      * @param $value
      * @return string
      * @throws StringException
-     * @internal param Eloquent $model
+     * @internal param Model $model
      */
     public function hashByModelName($modelName, $field, $value)
     {
@@ -70,7 +68,7 @@ class LaraVaultHasher
      * @return string
      * @throws StringException
      * @internal param $modelName
-     * @internal param Eloquent $model
+     * @internal param Model $model
      */
     public function hash(Model $model, $field, $value)
     {

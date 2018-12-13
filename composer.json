@@ -1,0 +1,52 @@
+{
+    "name": "kidfund/laravault",
+    "type": "library",
+    "description": "Auto encrypt Eloquent models using Hashicorp Vault",
+    "keywords": [
+        "kidfund",
+        "laravault",
+        "hashicorp",
+        "vault",
+        "encrypt",
+        "decrypt",
+        "encryption"
+    ],
+    "homepage": "https://github.com/kidfund/laravault",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tim Broder",
+            "email": "timothy.broder@gmail.com",
+            "homepage": "https://www.timbroder.com",
+            "role": "CTO"
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "5.5.9"
+        }
+    },
+    "require": {
+        "php" : "5.5.9",
+        "guzzlehttp/guzzle": "~5.3|~6.0",
+        "illuminate/support": "5.*",
+        "illuminate/database": "5.*",
+        "kidfund/thin-transit-client": "^0.9.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "4.*",
+        "orchestra/testbench": "^3.2",
+        "kidfund/monkey-patcher": "^0.9.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kidfund\\LaraVault\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/models",
+            "tests/migrations"
+        ]
+    }
+}

@@ -2,8 +2,9 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
-class CreateLaravaultHashTableTest extends Migration
+class CreateLaravaultHashTable extends Migration
 {
     /**
      * Run the migrations.

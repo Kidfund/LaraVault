@@ -1,34 +1,18 @@
 <?php
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+
 class LaraVaultIntegrationTest extends LaraVaultBaseTest
 {
-
-    protected function getDummyMigrationsDir()
-    {
-        $path = "tests/phpunit/laravault/migrations";
-
-        return $path;
-    }
+    use DatabaseMigrations;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->artisan('migrate:reset', [
-            '--database' => 'sqlite_test'
-        ]);
         $this->artisan('migrate', [
-            '--database' => 'sqlite_test',
-            '--path' => $this->getDummyMigrationsDir()
+            '--realpath' => $this->getDummyMigrationsDir(),
         ]);
-    }
-
-    public function tearDown()
-    {
-        $this->artisan('migrate:reset', [
-            '--database' => 'sqlite_test'
-        ]);
-        parent::tearDown();
     }
 
     /** @test */
@@ -210,12 +194,12 @@ class LaraVaultIntegrationTest extends LaraVaultBaseTest
         $dummys = DummyModelIntegrating::whereName('Testy McTesterstine');
         $this->assertGreaterThanOrEqual(2, $dummys->count());
 
-        foreach ($dummys->get() as $dummy) {
+        $dummys->each(function($dummy) use($mockClient, &$decryptedCount) {
             $dummy->setVaultClient($mockClient, true);
             $phone = $dummy->phone;
             $this->assertEquals($this::VALID_PHONE, $phone);
             $decryptedCount += $dummy->decryptedCount;
-        }
+        });
 
         $this->assertEquals($decryptCount, $decryptedCount);
     }

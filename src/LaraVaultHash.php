@@ -7,7 +7,7 @@
 
 namespace Kidfund\LaraVault;
 
-use Eloquent;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Kidfund\LaraVault\LaraVaultHasher
@@ -24,7 +24,7 @@ use Eloquent;
  * @method static \Illuminate\Database\Query\Builder|\Kidfund\LaraVault\LaraVaultHasher whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class LaraVaultHash extends Eloquent
+class LaraVaultHash extends Model
 {
     use LaraVault;
 

@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\RecurringContributionType;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -15,7 +14,7 @@ class CreateDummyRecurringTable extends Migration
     {
         Schema::create('recurring_contributions_schedule', function (Blueprint $table) {
             $table->increments('id');
-            
+
             // user id : refer to users table
             $table->integer('user_id')->unsigned();
 
